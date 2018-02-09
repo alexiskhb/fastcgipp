@@ -206,6 +206,8 @@ bool Fastcgipp::SocketGroup::listen()
 
     if(m_listeners.find(listen) == m_listeners.end())
     {
+        int reuse = 1;
+        setsockopt(listen, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
         if(::listen(listen, 100) < 0)
         {
             ERROR_LOG("Unable to listen on default FastCGI socket: "\
@@ -289,6 +291,8 @@ bool Fastcgipp::SocketGroup::listen(
         }
     }
 
+    int reuse = 1;
+    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     if(::listen(fd, 100) < 0)
     {
         ERROR_LOG("Unable to listen on unix socket :\"" << name << "\": "\
@@ -337,6 +341,8 @@ bool Fastcgipp::SocketGroup::listen(
     for(auto i=result; i!=nullptr; i=result->ai_next)
     {
         fd = socket(i->ai_family, i->ai_socktype, i->ai_protocol);
+        int reuse = 1;
+        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
         if(fd == -1)
             continue;
         if(
